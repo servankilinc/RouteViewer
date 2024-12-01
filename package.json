@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@turf/turf": "^7.1.0",
+    "leaflet-rotate": "^0.2.3",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11"
+  }
+}

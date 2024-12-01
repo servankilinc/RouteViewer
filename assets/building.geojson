@@ -1,0 +1,89 @@
+{
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "level": 1,
+          "name": "Bird Exhibit",
+          "height": 40,
+          "base_height": 0,
+          "color": "orange"
+        },
+        "geometry": {
+          "coordinates": [
+            [
+                [
+                    33.087763,
+                    39.090809
+                ],
+                [
+                    33.087655,
+                    39.090409
+                ],
+                [
+                    33.087972,
+                    39.090334
+                ],
+                [
+                    33.088192,
+                    39.090671
+                ],
+                [
+                    33.08794,
+                    39.090863
+                ],
+                [
+                    33.087763,
+                    39.090809
+                ]
+            ]
+          ],
+          "type": "Polygon"
+        },
+        "id": "06e8fa0b3f851e3ae0e1da5fc17e111e"
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "level": 1,
+          "name": "Bird Exhibit",
+          "height": 40,
+          "base_height": 0,
+          "color": "grey"
+        },
+        "geometry": {
+          "coordinates": [
+            [
+                [
+                    33.08957,
+                    39.089901
+                ],
+                [
+                    33.089442,
+                    39.08956
+                ],
+                [
+                    33.089699,
+                    39.089505
+                ],
+                [
+                    33.089951,
+                    39.089739
+                ],
+                [
+                    33.089796,
+                    39.090001
+                ],
+                [
+                    33.08957,
+                    39.089901
+                ]
+            ]
+          ],
+          "type": "Polygon"
+        },
+        "id": "08a10ab2bf15c4d14669b588062f7f08"
+      }
+    ],
+    "type": "FeatureCollection"
+  }

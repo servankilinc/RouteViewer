@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Leaflet Poligon Çizimi</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-draw/dist/leaflet.draw.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-draw/dist/leaflet.draw.js"></script>
+    <script src="./Leaflet.ImageOverlay.Rotated.js"></script>
+    <style>
+        .rotatable-image {
+            position: absolute;
+            transform-origin: left;
+            /* Döndürme merkezi */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map" style="height: 600px;"></div>
+    <button onclick="increaseImageOpacity()">Artıt</button>
+    <button onclick="decreaseImageOpacity()">Azalat</button>
+    <button onclick="rotate1()">Rotate - </button>
+    <button onclick="rotate2()">Rotate + </button>
+
+    
+    <script>
+        // Haritayı Başlat
+        const map = L.map("map").setView([39.090142, 33.088293], 20);
+
+
+        // OpenStreetMap Katmanı
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "&copy; OpenStreetMap contributors",
+        }).addTo(map);
+
+
+        // Çizim Kontrollerini Ekle
+        const drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        const drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems,
+            },
+            draw: {
+                polygon: true,
+                rectangle: false,
+                circle: false,
+                marker: false,
+            },
+        });
+        map.addControl(drawControl);
+
+        
+    </script>
+
+    <script src="./drag.js"></script>
+    <script type="module" src="app.js"></script>
+    <script type="module" src="test.js">
+
+    </script>
+
+</body>
+
+</html>

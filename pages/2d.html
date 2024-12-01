@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div style="display:none;">
+        <img id="scream" width="220" height="277" src="#">
+    </div>
+
+    <canvas id="myCanvas" width="1440" height="720" style="border:1px solid grey;">
+        Sorry, your browser does not support canvas.
+    </canvas>
+    <div style="display: flex; justify-content: space-between;">
+
+        <div>
+            <button onclick="loadImage()" type="button">Resmi Yükle</button>
+            <button onclick="clearEdges()" type="button">Kenarları Temizle</button>
+            <button onclick="clearLocations()" type="button">Konumları Temizle</button>
+        </div>
+        <div>
+            <button onclick="designDemand(1)" id="button_add_node" type="button">Kenar Ekle</button>
+            <button onclick="designDemand(2)" id="button_add_location" type="button">Konum Ekle</button>
+            <button onclick="designDemand(3)" id="button_create_path" type="button">Yol Oluştur</button>
+        </div>
+    </div>
+
+    <script>
+        const color_green = "#00ff398a";
+        const color_orange = "#ffa5008a";
+        const color_red = "#e52323ad";
+        const color_blue = "#1361a7cc";
+
+        const canvas_width = 1440;
+        const canvas_height = 720;
+        const radius = 16;
+        var edges = [];
+        var locations = [];
+        var pathList = [];
+
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+        const image = document.getElementById("scream");
+
+        image.addEventListener("load", (e) => {
+            ctx.drawImage(image, 0, 0, canvas_width, canvas_height);
+        });
+
+        canvas.addEventListener('mousedown', function (e) {
+            if (e.button == 0) {  // left click only
+                switch (active_demand_type) {
+                    case 1: // edge ekle aktif
+
+                        addNewEdge(canvas, e)
+                        break;
+                    case 2: // konum ekle aktif
+
+                        addNewLocation(canvas, e)
+                        break;
+                    case 3: // Yol ekle aktif
+
+                        createNewPath(canvas, e)
+                        break;
+                    default:
+                        break;
+                }
+            }
+        })
+
+        function loadImage() {
+            image.setAttribute("src", "https://hastaneler.erciyes.edu.tr/EditorUpload/Files/e24c1f50-62a7-4537-8579-8b2ff8edbee9.jpg");
+        }
+
+
+        function addNewEdge(canvas, event) {
+            const rect = canvas.getBoundingClientRect()
+            const x = Math.round(event.clientX - rect.left);
+            const y = Math.round(event.clientY - rect.top);
+
+            if (isValidCord_edge(x, y)) {
+                edges.push({ id: e7(), x: x, y: y })
+                drawEdge(x, y, color_green)
+            }
+            else {
+                removeEdge(x, y);
+            }
+        }
+
+        function addNewLocation(canvas, event) {
+            const rect = canvas.getBoundingClientRect()
+            const x = Math.round(event.clientX - rect.left);
+            const y = Math.round(event.clientY - rect.top);
+
+            if (isValidCord_location(x, y)) {
+                locations.push({ id: e7(), x: x, y: y })
+                drawEdge(x, y, color_red)
+            }
+            else {
+                removeLocation(x, y);
+            }
+        }
+
+        var isFrstEdgeAddedToPath = false;
+        var firstSelectedEdgeId = null;
+        function createNewPath(canvas, event) {
+            const rect = canvas.getBoundingClientRect()
+            const x = Math.round(event.clientX - rect.left);
+            const y = Math.round(event.clientY - rect.top);
+
+            var index = edges.findIndex(node => (x + radius >= node.x && node.x >= x - radius) && (y + radius >= node.y && node.y >= y - radius))
+            if (index != "-1") {
+                var relatedEdge = edges[index];
+                console.log("bulunan edge path için => ", relatedEdge);
+                if(isFrstEdgeAddedToPath){
+                    isFrstEdgeAddedToPath = false; 
+                    var lastPathEdgeList = pathList[pathList.length-1].edgeList;
+                    var firstnode = lastPathEdgeList[0]; 
+                    if(firstnode.id == relatedEdge.id){ // aynı node tıklanmış o yüzden bu işlemi iptal et ve son pathi sil
+                        pathList.splice(pathList.length-1, 1)
+                    }
+                    else if(pathList.some(path => path.edgeList.some(e => e.id == relatedEdge.id))){ // aynı iki düğüme sahip bir path var zaten
+                        pathList.splice(pathList.length-1, 1)
+                    }
+                    else{
+                        pathList[pathList.length-1].edgeList.push(relatedEdge);
+                    }
+
+                    // çizim işlemi 
+                    drawPath(firstnode, relatedEdge, color_blue);
+                }
+                else{
+                    isFrstEdgeAddedToPath = true; // bir sonrali edge için yeni bir path değil son oluşturulanın edge2 si olarak eklenecek
+                    pathList.push({ id: e7(), edgeList:[relatedEdge]})
+
+                    // seçilen node(firstnode sadece) için renk değiştirmek için
+                    firstSelectedEdgeId = relatedEdge.id;
+                }
+                resetCanvas();
+            }
+            else{ // düğüm seçilmemiş ise path silinmek istenebilir
+                alert("Control")
+                if (ctx.isPointInPath(x, y)) {
+                    alert("Var")
+                    
+                };
+            }
+        }
+
+
+        function drawEdge(x, y, color) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+
+        function drawPath(firstnode, secondnode, color) {
+            ctx.beginPath();
+            ctx.lineWidth = 6
+            ctx.moveTo(firstnode.x, firstnode.y);
+            ctx.lineTo(secondnode.x, secondnode.y);
+            ctx.strokeStyle = color;
+            ctx.stroke();
+        }
+
+
+        // edge düğümleri üst üste gelmesin diye
+        function isValidCord_edge(x, y) {
+            var distance = radius * 2;
+            if (edges.length == 0) { return true; }
+
+            var control = true;
+            edges.map(edge => {
+                if (control) {
+                    var euclidean = Math.sqrt((edge.x - x) * (edge.x - x) + (edge.y - y) * (edge.y - y));
+                    control = euclidean < distance ? false : true;
+                    console.log("dis edge= ", euclidean)
+                }
+            })
+
+            return control;
+        }
+
+        // konum düğümleri üst üste gelmesin diye
+        function isValidCord_location(x, y) {
+            var distance = radius * 2;
+            if (locations.length == 0) { return true; }
+
+            var control = true;
+            locations.map(location => {
+                if (control) {
+                    var euclidean = Math.sqrt((location.x - x) * (location.x - x) + (location.y - y) * (location.y - y));
+                    control = euclidean < distance ? false : true;
+                    console.log("dis location= ", euclidean)
+                }
+            })
+
+            return control;
+        }
+
+        function removeEdge(x, y) {
+            var index = edges.findIndex(node => (x + radius >= node.x && node.x >= x - radius) && (y + radius >= node.y && node.y >= y - radius))
+            if (index != "-1") {
+                var relatedEdge = edges[index];
+                console.log("silinen kenar düğümü => ", relatedEdge);
+
+                // kenar silinince varsa path de silinir
+                while (pathList.some(path => path.edgeList.some(e => e.id == relatedEdge.id))){
+                    var path_index = pathList.findIndex(path => path.edgeList.some(e => e.id == relatedEdge.id)); 
+                    console.log("silenmei gerekn path ", pathList[path_index]);
+                    pathList.splice(path_index, 1)
+                }
+                 
+                console.log("result  list", pathList)
+ 
+
+                edges.splice(index, 1);
+
+                resetCanvas()
+            }
+        }
+
+        function removeLocation(x, y) {
+            var index = locations.findIndex(node => (x + radius >= node.x && node.x >= x - radius) && (y + radius >= node.y && node.y >= y - radius))
+            if (index != "-1") {
+                var relatedLocation = locations[index];
+                console.log("silinen konum düğümü => ", relatedLocation);
+ 
+                locations.splice(index, 1);
+                resetCanvas()
+            }
+        }
+
+
+        function resetCanvas() {
+            ctx.reset();
+            // image
+            if (image.getAttribute("src") != null && image.getAttribute("src") != "#") {
+                ctx.drawImage(image, 0, 0, canvas_width, canvas_height);
+            }
+            //edges
+            if (edges != null && edges.length > 0) {
+                edges.map(edge => {
+                    drawEdge(edge.x, edge.y, isFrstEdgeAddedToPath && edge.id == firstSelectedEdgeId ? "pink" : color_green)
+                })
+            }
+            // locations
+            if (locations != null && locations.length > 0) {
+                locations.map(location => {
+                    drawEdge(location.x, location.y, color_red)
+                })
+            }
+            // pathList
+            if (pathList != null && pathList.length > 0) {
+                pathList.map(path => {
+                    if(path.edgeList.length > 1){
+                        drawPath(path.edgeList[0], path.edgeList[1], color_blue)
+                    }
+                })
+            }
+        }
+
+        function clearEdges() {
+            ctx.reset();
+            // image
+            if (image.getAttribute("src") != null && image.getAttribute("src") != "#") {
+                ctx.drawImage(image, 0, 0, canvas_width, canvas_height);
+            }
+            // edges
+            edges = [];
+            // locations
+            if (locations != null && locations.length > 0) {
+                locations.map(location => {
+                    drawEdge(location.x, location.y, color_red)
+                })
+            }
+            // pathList
+            if (pathList != null && pathList.length > 0) {
+                pathList.map(path => {
+                    drawEdge(path.edgeList[0], path.edgeList[1], color_blue)
+                })
+            }
+        }
+
+        function clearLocations() {
+            ctx.reset();
+            // image
+            if (image.getAttribute("src") != null && image.getAttribute("src") != "#") {
+                ctx.drawImage(image, 0, 0, canvas_width, canvas_height);
+            }
+            // edges
+            if (edges != null && edges.length > 0) {
+                edges.map(edge => {
+                    drawEdge(edge.x, edge.y, color_green)
+                })
+            }
+            // locations
+            locations = [];
+            // pathList
+            if (pathList != null && pathList.length > 0) {
+                pathList.map(path => {
+                    drawEdge(path.edgeList[0], path.edgeList[1], color_blue)
+                })
+            }
+        }
+
+
+
+        // Draw Path
+        // function drawPath
+    </script>
+
+
+    <script>
+        var active_demand_type = 0;
+        const button_add_node = document.getElementById("button_add_node");
+        const button_add_location = document.getElementById("button_add_location");
+
+        function designDemand(demandType, event) {
+
+            switch (demandType) {
+                case 1: // kenar düğümü
+                    if (active_demand_type == demandType) { // aktif seçim tekrar seçilirse iptal işlemi çalışacak
+                        active_demand_type = 0;
+                        setPageToAddEdgeDisable()
+                    }
+                    else {
+                        active_demand_type = demandType;
+                        setPageToAddEdgeActive();
+                    }
+
+                    break;
+                case 2: // konum düğümü
+                    if (active_demand_type == demandType) { // aktif seçim tekrar seçilirse iptal işlemi çalışacak
+                        active_demand_type = 0;
+                        setPageToAddLocationDisable()
+                    }
+                    else {
+                        active_demand_type = demandType;
+                        setPageToAddLocationActive();
+                    }
+                    break;
+                case 3: // Yol oluştur
+                    if (active_demand_type == demandType) { // aktif seçim tekrar seçilirse iptal işlemi çalışacak
+                        active_demand_type = 0;
+                        
+                    }
+                    else {
+                        active_demand_type = demandType;
+
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function setPageToAddEdgeActive() {
+            button_add_node.textContent = "Yeni Kenar Ekliyebilirsiniz"
+            button_add_node.style.backgroundColor = "blue";
+            button_add_node.style.color = "white";
+
+            button_add_location.textContent = "Konum Ekle"
+            button_add_location.style.backgroundColor = "";
+            button_add_location.style.color = "";
+        }
+
+        function setPageToAddLocationActive() {
+            button_add_location.textContent = "Yeni Konum Ekliyebilirsiniz"
+            button_add_location.style.backgroundColor = "blue";
+            button_add_location.style.color = "white";
+
+            button_add_node.textContent = "Kenar Ekle"
+            button_add_node.style.backgroundColor = "";
+            button_add_node.style.color = ""
+        }
+
+        function setPageToAddEdgeDisable() {
+            button_add_node.textContent = "Kenar Ekle"
+            button_add_node.style.backgroundColor = "";
+            button_add_node.style.color = ""
+        }
+
+        function setPageToAddLocationDisable() {
+            button_add_location.textContent = "Konum Ekle"
+            button_add_location.style.backgroundColor = "";
+            button_add_location.style.color = "";
+        }
+    </script>
+
+    <script>
+        var lut = []; for (var i=0; i<256; i++) { lut[i] = (i<16?'0':'')+(i).toString(16); }
+
+        function e7()
+        {
+            var d0 = Math.random()*0xffffffff|0;
+            var d1 = Math.random()*0xffffffff|0;
+            var d2 = Math.random()*0xffffffff|0;
+            var d3 = Math.random()*0xffffffff|0;
+            return lut[d0&0xff]+lut[d0>>8&0xff]+lut[d0>>16&0xff]+lut[d0>>24&0xff]+'-'+
+            lut[d1&0xff]+lut[d1>>8&0xff]+'-'+lut[d1>>16&0x0f|0x40]+lut[d1>>24&0xff]+'-'+
+            lut[d2&0x3f|0x80]+lut[d2>>8&0xff]+'-'+lut[d2>>16&0xff]+lut[d2>>24&0xff]+
+            lut[d3&0xff]+lut[d3>>8&0xff]+lut[d3>>16&0xff]+lut[d3>>24&0xff];
+        }
+    </script>
+</body>
+
+</html>
