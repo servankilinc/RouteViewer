@@ -126,13 +126,13 @@ const setNorthSizer = (currentBounds) => {
   const newMidPoint = markerNorth.getLatLng();
   markerNorth.setLatLng({
     lat: currentBounds[1].lat, // newMidPoint.lat,
-    lng: (currentBounds[1].lng + currentBounds[2].lng) / 2, // Sabit boylam
+    lng: currentBounds[1].lng, // currentBounds[2].lng  / 2
   });
 };
 const setEastSizer = (currentBounds) => {
   const newMidPoint = markerEast.getLatLng();
   markerEast.setLatLng({
-    lat: (currentBounds[0].lat + currentBounds[1].lat) / 2,
+    lat: currentBounds[0].lat, // currentBounds[1].lat / 2
     lng: currentBounds[2].lng, // newMidPoint.lng,
   });
 };
@@ -140,14 +140,14 @@ const setSouthSizer = (currentBounds) => {
   const newMidPoint = markerSouth.getLatLng();
   markerSouth.setLatLng({
     lat: currentBounds[0].lat, // newMidPoint.lat,
-    lng: (currentBounds[0].lng + currentBounds[3].lng) / 2, // Sabit boylam
+    lng: currentBounds[0].lng, // currentBounds[3].lng / 2
   });
 };
 const setWestSizer = (currentBounds) => {
   const newMidPoint = markerWest.getLatLng();
   markerWest.setLatLng({
-    lat: (currentBounds[0].lat + currentBounds[1].lat) / 2, // Sabit enlem
-    lng: currentBounds[0].lng, // newMidPoint.lng,
+    lat: currentBounds[1].lat, //+ currentBounds[1].lat / 2
+    lng: currentBounds[3].lng, // newMidPoint.lng,
   });
 };
 

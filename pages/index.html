@@ -47,7 +47,7 @@
                 </button>
                 
                 <div onclick="AddNewFloor(-1)" role="button" class="list-group-item list-group-item-action d-flex justify-content-center">
-                    <i class="fa-solid fa-circle-minus fa-xs text-secondary"></i>
+                    <i class="fa-solid fa-circle-plus fa-xs text-secondary"></i>
                 </div>
                 <div id="floorList">
            
@@ -145,6 +145,36 @@
         </div>
     </div>
 
+    <div id="modalSelectMarkerPurpose" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Konum Detay Bilgisi Giriniz</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="$('#modalSelectMarkerPurpose').hide()"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="markerName" class="form-label">Konum İsmi</label>
+                        <input type="text" class="form-control" id="markerName" aria-describedby="nameHelp">
+                    </div>
+                    <div class="mb-3">
+                        <label for="markerName" class="form-label">İşaret Neyi Temsil Etmekte</label>
+                        <select id="selectMarkerPurpose" class="form-select" aria-label="Default select example">
+                            <option selected>Seçiniz</option>
+                            <option value="10">Merdiven Yön Yukarı</option>
+                            <option value="11">Merdiven Yön Aşağı</option>
+                            <option value="20">Asansör</option>
+                            <option value="0">Diğer</option>
+                          </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnSaveMarkerInfos">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
@@ -187,7 +217,7 @@
                 polygon: true,
                 rectangle: false,
                 circle: false,
-                marker: false,
+                marker: true,
             },
         });
         map.addControl(drawControl);
@@ -197,6 +227,7 @@
     <script src="/utils/drag.js"></script>
     <script type="module" src="/scripts/app.js"></script>
     <script type="module" src="/scripts/imageController-2.js"></script>
+    <script type="module" src="/scripts/generator.js"></script>
 </body>
 
 </html>
