@@ -91,4 +91,4 @@ var inputGeoJSON = {
 const offsetRatio = 0.9;
 
 const result = createWallPolygon(inputGeoJSON, offsetRatio);
-console.log(JSON.stringify(result, null, 2));
+// console.log(JSON.stringify(result, null, 2));
